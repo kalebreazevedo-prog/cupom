@@ -1,0 +1,382 @@
+<!DOCTYPE html><html lang="pt"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rodauto – Confirmação de Pagamento</title>
+
+  <!-- Meta Pixel Code -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '864243725998206');
+    fbq('track', 'PageView');
+  </script>
+  <!-- End Meta Pixel Code -->
+
+  <!-- Fonte Montserrat -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #0b0b0b;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+    }
+
+    /* Banner */
+    .banner {
+      background: linear-gradient(90deg, #ffcc00, #ffda44);
+      color: #111;
+      font-weight: 700;
+      text-align: center;
+      font-size: 1.5rem;
+      padding: 14px 25px;
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0 0 20px rgba(255, 221, 51, 0.3);
+    }
+
+    /* Comentários */
+    .comentarios {
+      background: #111;
+      padding: 1rem 1.2rem;
+      margin-top: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 420px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.05);
+    }
+    .comentario {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .comentario img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      margin-right: 10px;
+      border: 2px solid #ffcc00;
+    }
+    .comentario span {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+    .comentario strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Contador */
+    .contador {
+      background: #111;
+      margin-top: 18px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      text-align: center;
+      border: 1px solid #222;
+      width: 90%;
+      max-width: 420px;
+    }
+    .contador span {
+      color: #ffcc00;
+      font-weight: 700;
+    }
+
+    /* Formulário */
+    form {
+      background: #111;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 25px rgba(255,255,255,0.08);
+      width: 90%;
+      max-width: 420px;
+      margin-top: 20px;
+    }
+    h2 {
+      text-align: center;
+      color: #ffcc00;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1px solid #444;
+      border-radius: 8px;
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    /* Métodos de pagamento */
+    .payment-methods {
+      display: flex;
+      justify-content: space-between;
+      margin: 15px 0;
+    }
+    .payment-methods button {
+      flex: 1;
+      margin: 0 5px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #222;
+      color: #fff;
+      border: 1px solid #555;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+    .payment-methods button.active {
+      background: #ffcc00;
+      color: #111;
+      border-color: #ffcc00;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      background: #ffcc00;
+      color: #111;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button[type="submit"]:hover {
+      background: #ffdb4d;
+    }
+
+    /* Loading Spinner */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #ffffff30;
+      border-top: 4px solid #ffcc00;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    .loading-text {
+      color: #ffcc00;
+      text-align: center;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    /* Pop-up */
+    #popup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .modal {
+      background: #111;
+      padding: 2rem;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 350px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(255,255,255,0.08);
+    }
+    .modal h3 {
+      color: hwb(48 0% 0%);
+      margin-bottom: 10px;
+    }
+    .confirm-btn {
+      background: #ffe600;
+      color: #fff;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+    .confirm-btn:hover {
+      background: #fcd80c;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="banner">🎉 Valor do Prêmio: <strong>49.000 MT</strong></div>
+
+  <div class="comentarios">
+    <div class="comentario">
+      <img src="images/536028477_4164500683821260_6597834753781003049_n.jpg" alt="user">
+      <span><strong>Anselmo Selino.</strong> — Já recebi meus 49.000MT, obrigado Cupom da Vez! 💛</span>
+    </div>
+    <div class="comentario">
+      <img src="images/538802808_122175153098566092_7096764924092857293_n.jpg" alt="user">
+      <span><strong>Celina Hobjane.</strong> — Fui pago na hora, recomendo 🔥</span>
+    </div>
+  </div>
+
+  <div class="contador">
+    ⚡ Oferta expira em <span id="timer">09:59</span>
+  </div>
+
+  <form id="formPagamento">
+    <h2>Confirme o Pagamento</h2>
+    <input type="text" id="nome" placeholder="Seu nome completo" required="">
+    <input type="tel" id="numero" placeholder="Seu número de telefone" required="">
+
+    <div class="order-bump" style="margin: 15px 0; padding: 15px; border: 2px dashed #ffcc00; border-radius: 8px;">
+      <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+        <input type="checkbox" id="comunidadeVip" style="width: auto; margin: 0;">
+        <div>
+          <strong style="color: #ffcc00;">COMUNIDADE VIP</strong>
+          <p style="margin: 5px 0 0; font-size: 0.9em;">Adicionar acesso VIP (+97MT)</p>
+        </div>
+      </label>
+    </div>
+
+    <div class="payment-methods">
+      <button type="button" data-metodo="mpesa" class="active">M-Pesa</button>
+      <button type="button" data-metodo="emola">e-Mola</button>
+    </div>
+
+    <button type="submit">Confirmar Pagamento</button>
+  </form>
+
+  <div id="popup"></div>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const metodoBtns = document.querySelectorAll(".payment-methods button");
+    let metodoSelecionado = "mpesa";
+    const popup = document.getElementById("popup");
+    const form = document.getElementById("formPagamento");
+    const whatsappNumber = "258850142875";
+
+    // Contador regressivo (10 minutos)
+    let tempo = 10 * 60;
+    const timerEl = document.getElementById("timer");
+    setInterval(() => {
+      const m = String(Math.floor(tempo / 60)).padStart(2, "0");
+      const s = String(tempo % 60).padStart(2, "0");
+      timerEl.textContent = `${m}:${s}`;
+      if (tempo > 0) tempo--;
+    }, 1000);
+
+    metodoBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        metodoBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        metodoSelecionado = btn.dataset.metodo;
+      });
+    });
+
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      
+      // Show loading state
+      popup.innerHTML = `
+        <div class="modal">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">Processando seu pagamento...</div>
+        </div>
+      `;
+      popup.style.display = "flex";
+
+      const nome = document.getElementById("nome").value.trim();
+      const numero = document.getElementById("numero").value.trim();
+      const comunidadeVip = document.getElementById("comunidadeVip").checked;
+      const valorBase = 197;
+      const valorVip = comunidadeVip ? 97 : 0;
+      const valorTotal = valorBase + valorVip;
+      const valor = valorTotal + " MT";
+
+      try {
+        await fetch("https://n8n.ejss.space/webhook/rodauto", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nome,
+            numero,
+            metodo: metodoSelecionado,
+            valor,
+            origem: window.location.href,
+            data: new Date().toISOString()
+          })
+        });
+        console.log("✅ Webhook enviado para n8n");
+        
+        // Simula um tempo de processamento (1.5 segundos)
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+      } catch (err) {
+        console.error("Erro ao enviar webhook:", err);
+      } finally {
+        // Reativa o botão
+        submitBtn.disabled = false;
+      }
+
+      // Pop-up de sucesso
+      popup.innerHTML = `
+        <div class="modal">
+          <h3>🎉 Parabéns, ${nome.split(" ")[0]}!</h3>
+          <p>Você vai receber <b>49.000MT</b> via <b>${metodoSelecionado.toUpperCase()}</b>.</p>
+          <p>Para o número <b>${numero}</b>.</p>
+          <p style="margin-top:10px;">Clique abaixo para finalizar pagamento de ${valorTotal} com nosso gerente.</p>
+          <button class="confirm-btn" id="btnWhats">💬 Falar com o Gerente</button>
+        </div>
+      `;
+      popup.style.display = "flex";
+
+      document.getElementById("btnWhats").addEventListener("click", () => {
+        // Dispara evento do Meta Pixel
+        fbq('track', 'InitiateCheckout', {
+          value: valorTotal,
+          currency: 'MZN'
+        });
+
+        const servicosMsg = comunidadeVip ? 
+          `\nServiços selecionados:\n- Cupom da Vez: 197MT\n- Comunidade VIP: 97MT\nTotal: ${valorTotal}MT` : 
+          `\nServiço selecionado:\n- Cupom da Vez: 197MT`;
+
+        const msg = `Olá! Sou ${nome}.\nQuero receber meus 49.000 através de ${metodoSelecionado.toUpperCase()}.\nMeu número é ${numero}.\n\nMais antes, quero confirmar o pagamento:${servicosMsg}\n\nPeço os detalhes de pagamento.`;
+        
+        window.location.href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
+      });
+    });
+  });
+  </script>
+
+
+</body></html>
